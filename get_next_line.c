@@ -13,7 +13,7 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-int		check_leftovers(t_list *head, char **result);
+int		check_full_leftover_line(t_list *head, char **result);
 ssize_t	find_endofline(t_list *cur);
 int		add_new_node(t_list *cur);
 void	free_list(t_list *head);
@@ -33,7 +33,7 @@ char	*get_next_line(int fd)
 	// check for leftovers
 	if (head.bytes_unsaved)
 	{
-		if (!check_leftovers(&head, &result))
+		if (!check_full_leftover_line(&head, &result))
 			return (NULL);
 		if (result)
 			return (result);
@@ -105,7 +105,7 @@ char	*get_next_line(int fd)
 	{
 		j = 0;
 		while (j < cur->bytes_unsaved)	//would be while (cur->str[j]) with BUFFER_SIZE + 1 in struct
-			result[i++] = cur->str[j++];
+			result[i++] = cur->str[cur->newline_pos + ++j];
 		cur = cur->next;
 	}
 	j = 0;
@@ -121,12 +121,12 @@ char	*get_next_line(int fd)
 	else
 	{
 		head.bytes_unsaved -= result_size;
-		head.newline_pos = -1;
+		//head.newline_pos = -1;
 	}
 	return (result);
 }
 
-int	check_leftovers(t_list *head, char **result)
+int	check_full_leftover_line(t_list *head, char **result)
 {
 	size_t	i;
 	ssize_t	new_newline_pos;
