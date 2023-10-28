@@ -55,16 +55,16 @@ char	*get_next_line(int fd)
 			free_list(&head);
 			return (NULL);
 		}
-		if (cur->bytes_unsaved == 0)
-		{
-			head.endoffile = 1;
-			break ;
-		}
+		// if (cur->bytes_unsaved == 0)
+		// {
+		// 	head.endoffile = 1;
+		// 	break ;
+		// }
 		cur->str[cur->bytes_unsaved] = '\0';
+		cur->newline_pos = find_endofline(cur);
 		if (cur->bytes_unsaved != BUFFER_SIZE)
 			head.endoffile = 1;
-		cur->newline_pos = find_endofline(cur);
-		if (cur->newline_pos == -1)
+		if (cur->newline_pos == -1 && !head.endoffile)
 		{
 			// if (cur->bytes_unsaved != BUFFER_SIZE)
 			// 	cur->newline_pos = cur->bytes_unsaved - 1;
