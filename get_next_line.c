@@ -121,7 +121,8 @@ char	*get_next_line(int fd)
 	else
 	{
 		head.bytes_unsaved -= result_size;
-		//head.newline_pos = -1;
+		if (!head.bytes_unsaved)
+			head.newline_pos = -1;
 	}
 	return (result);
 }

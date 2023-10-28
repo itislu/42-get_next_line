@@ -1,4 +1,3 @@
-#include "get_next_line.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -6,13 +5,16 @@
 #ifndef FD
 # define FD 0
 #endif
+#define BUFFER_SIZE 1
+
+#include "get_next_line.h"
 
 int	main(void)
 {
 	char	*result;
 	int		fd;
 
-	fd = open("/nfs/homes/ldulling/francinette/tests/get_next_line/gnlTester/files/alternate_line_nl_no_nl", O_RDONLY);
+	fd = open("/nfs/homes/ldulling/francinette/tests/get_next_line/fsoares/read_error.txt", O_RDONLY);
 	//fd = open("test_short.txt", O_RDONLY);
 
 	/* LOOP */
