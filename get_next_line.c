@@ -61,10 +61,14 @@ char	*get_next_line(int fd)
 		// 	break ;
 		// }
 		cur->str[cur->bytes_unsaved] = '\0';
-		cur->newline_pos = find_endofline(cur);
 		if (cur->bytes_unsaved != BUFFER_SIZE)
-			head.endoffile = 1;
-		if (cur->newline_pos == -1 && !head.endoffile)
+		{
+			cur->endoffile = 1;
+			if (head.endoffile && head.bytes_unsaved == 0)
+				return (NULL);
+		}
+		cur->newline_pos = find_endofline(cur);
+		if (cur->newline_pos == -1 && !cur->endoffile)
 		{
 			// if (cur->bytes_unsaved != BUFFER_SIZE)
 			// 	cur->newline_pos = cur->bytes_unsaved - 1;
@@ -115,7 +119,10 @@ char	*get_next_line(int fd)
 		free_list(&head);
 	}
 	else
+	{
 		head.bytes_unsaved -= result_size;
+		head.newline_pos = -1;
+	}
 	return (result);
 }
 
@@ -188,6 +195,7 @@ void	save_leftover(t_list *head, t_list *cur)
 	head->str[i] = '\0';
 	head->newline_pos = -1;	// 0 or -1?
 	head->bytes_unsaved = i;
+	head->endoffile = cur->endoffile;
 	return ;
 }
 
