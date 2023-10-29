@@ -65,8 +65,6 @@ char	*get_next_line(int fd)
 		cur->newline_pos = find_endofline(cur);
 		if (cur->newline_pos == -1 && !cur->endoffile)
 		{
-			// if (cur->bytes_unsaved != BUFFER_SIZE)
-			// 	cur->newline_pos = cur->bytes_unsaved - 1;
 			if (!add_new_node(cur))
 			{
 				// malloc error handling
@@ -155,15 +153,19 @@ ssize_t	find_endofline(t_list *cur)
 {
 	ssize_t	i;
 
+	/* Possibly fit somewhere here */
+	// if (cur->bytes_unsaved != BUFFER_SIZE)
+	// 	cur->newline_pos = cur->bytes_unsaved - 1;
+
 	i = cur->newline_pos + 1;
-	while (cur->str[i])
+	while (cur->str[i])	// or i < cur->bytes_unsaved
 	{
 		if (cur->str[i] == '\n')
 			return (i);
 		i++;
 	}
 	if (cur->endoffile)
-		return (i - 1);
+		return (i - 1);	// or cur->bytes_unsaved - 1
 	else
 	 	return (-1);
 }

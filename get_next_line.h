@@ -14,7 +14,7 @@ typedef struct	s_list
 {
 	char			str[BUFFER_SIZE + 1];
 	char			endoffile;
-	ssize_t			newline_pos;
+	ssize_t			newline_pos;	// might actually better be called endofline_pos
 	ssize_t			bytes_unsaved;
 	struct s_list	*next;
 }	t_list;
