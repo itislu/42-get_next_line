@@ -17,6 +17,7 @@ int		check_for_full_leftover_line(t_list *head, char **result);
 ssize_t	find_endofline(t_list *cur);
 int		add_new_node(t_list *cur);
 void	free_list(t_list *head);
+void	clear_static(t_list *head);
 void	save_leftover(t_list *head, t_list *cur);
 
 char	*get_next_line(int fd)
@@ -41,8 +42,6 @@ char	*get_next_line(int fd)
 			return (NULL);
 		cur = head.next;
 	}
-	else if (head.endoffile)
-		return (NULL);
 	else
 		cur = &head;
 	// read loop
@@ -53,15 +52,16 @@ char	*get_next_line(int fd)
 		{
 			// read error handling
 			free_list(&head);
+			clear_static(&head);
 			return (NULL);
 		}
-		cur->str[cur->bytes_unsaved] = '\0';
 		if (cur->bytes_unsaved != BUFFER_SIZE)
 		{
-			cur->endoffile = 1;
-			if (head.endoffile && head.bytes_unsaved == 0)
+			if (head.bytes_unsaved == 0)
 				return (NULL);
+			cur->endoffile = 1;
 		}
+		cur->str[cur->bytes_unsaved] = '\0';
 		cur->newline_pos = find_endofline(cur);
 		if (cur->newline_pos == -1 && !cur->endoffile)
 		{
@@ -117,6 +117,7 @@ char	*get_next_line(int fd)
 		if (!head.bytes_unsaved)
 			head.newline_pos = -1;
 	}
+	head.endoffile = 0;
 	return (result);
 }
 
@@ -141,8 +142,8 @@ int	check_for_full_leftover_line(t_list *head, char **result)
 			i++;
 		}
 		(*result)[i] = '\0';
-		head->newline_pos = new_newline_pos;
 		head->bytes_unsaved -= result_size;
+		head->newline_pos = new_newline_pos;
 	}
 	else
 		*result = NULL;
@@ -175,8 +176,9 @@ int	add_new_node(t_list *cur)
 	cur->next = (t_list *) malloc(sizeof(t_list));
 	if (!cur->next)
 		return (0);
-	cur->next->endoffile = 0;
+	cur->next->bytes_unsaved = 0;
 	cur->next->newline_pos = -1;
+	cur->next->endoffile = 0;
 	cur->next->next = NULL;
 	return (1);
 }
@@ -191,8 +193,8 @@ void	save_leftover(t_list *head, t_list *cur)
 	while (j < cur->bytes_unsaved)
 		head->str[i++] = cur->str[j++];
 	head->str[i] = '\0';
-	head->newline_pos = -1;	// 0 or -1?
 	head->bytes_unsaved = i;
+	head->newline_pos = -1;	// 0 or -1?
 	head->endoffile = cur->endoffile;
 	return ;
 }
@@ -208,4 +210,17 @@ void	free_list(t_list *head)
 		free(cur);
 	}
 	return ;
+}
+
+void	clear_static(t_list *head)
+{
+	size_t	i;
+
+	i = 0;
+	while (head->str[i])
+	  	head->str[i++] = '\0';
+	head->bytes_unsaved = 0;
+	head->newline_pos = -1;
+	head->endoffile = 0;
+	head->next = NULL;
 }
