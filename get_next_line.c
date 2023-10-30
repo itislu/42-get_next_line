@@ -47,7 +47,7 @@ char	*get_next_line(int fd)
 	// read loop
 	while (cur)
 	{
-		cur->bytes_unsaved = read(fd, cur->str, BUFFER_SIZE);
+		cur->bytes_unsaved = read(fd, cur->buf, BUFFER_SIZE);
 		if (cur->bytes_unsaved == -1)
 		{
 			// read error handling
@@ -61,7 +61,7 @@ char	*get_next_line(int fd)
 				return (NULL);
 			cur->endoffile = 1;
 		}
-		cur->str[cur->bytes_unsaved] = '\0';
+		cur->buf[cur->bytes_unsaved] = '\0';
 		cur->newline_pos = find_endofline(cur);
 		if (cur->newline_pos == -1 && !cur->endoffile)
 		{
@@ -97,13 +97,13 @@ char	*get_next_line(int fd)
 	while (cur->next)
 	{
 		j = 0;
-		while (j < cur->bytes_unsaved)	//would be while (cur->str[j]) with BUFFER_SIZE + 1 in struct
-			result[i++] = cur->str[cur->newline_pos + ++j];
+		while (j < cur->bytes_unsaved)	//would be while (cur->buf[j]) with BUFFER_SIZE + 1 in struct
+			result[i++] = cur->buf[cur->newline_pos + ++j];
 		cur = cur->next;
 	}
 	j = 0;
 	while (j <= cur->newline_pos)
-		result[i++] = cur->str[j++];
+		result[i++] = cur->buf[j++];
 	result[i] = '\0';
 	// copy any leftover into the static head
 	if (cur != &head)
@@ -138,7 +138,7 @@ int	check_for_full_leftover_line(t_list *head, char **result)
 		head->newline_pos++;
 		while (i < result_size)
 		{
-			(*result)[i] = head->str[head->newline_pos + i];
+			(*result)[i] = head->buf[head->newline_pos + i];
 			i++;
 		}
 		(*result)[i] = '\0';
@@ -159,9 +159,9 @@ ssize_t	find_endofline(t_list *cur)
 	// 	cur->newline_pos = cur->bytes_unsaved - 1;
 
 	i = cur->newline_pos + 1;
-	while (cur->str[i])	// or i < cur->bytes_unsaved
+	while (cur->buf[i])	// or i < cur->bytes_unsaved	//! need a better way
 	{
-		if (cur->str[i] == '\n')
+		if (cur->buf[i] == '\n')
 			return (i);
 		i++;
 	}
@@ -191,8 +191,8 @@ void	save_leftover(t_list *head, t_list *cur)
 	i = 0;
 	j = cur->newline_pos + 1;
 	while (j < cur->bytes_unsaved)
-		head->str[i++] = cur->str[j++];
-	head->str[i] = '\0';
+		head->buf[i++] = cur->buf[j++];
+	head->buf[i] = '\0';
 	head->bytes_unsaved = i;
 	head->newline_pos = -1;	// 0 or -1?
 	head->endoffile = cur->endoffile;
@@ -217,8 +217,8 @@ void	clear_static(t_list *head)
 	size_t	i;
 
 	i = 0;
-	while (head->str[i])
-	  	head->str[i++] = '\0';
+	while (head->buf[i])
+	  	head->buf[i++] = '\0';
 	head->bytes_unsaved = 0;
 	head->newline_pos = -1;
 	head->endoffile = 0;
