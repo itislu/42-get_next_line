@@ -51,7 +51,7 @@ int	main(void)
 
 	// With BUFFER_SIZE of 10, if there's still a full line in the buffer, but before getting it the file gets closed, it would still return the full line from the buffer once it's called again.
 	fd = open("test_short.txt", O_RDONLY);
-	iterations = 1;
+	iterations = 3;
 	for (int i = 0; i < iterations; i++)
 	{
 		result = get_next_line(fd);
