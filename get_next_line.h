@@ -7,7 +7,7 @@
 # include <unistd.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 128
+#  define BUFFER_SIZE 10
 # endif
 
 typedef struct	s_list
