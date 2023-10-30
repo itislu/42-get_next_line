@@ -69,6 +69,7 @@ char	*get_next_line(int fd)
 			{
 				// malloc error handling
 				free_list(&head);
+				clear_static(&head);
 				return (NULL);
 			}
 		}
@@ -89,6 +90,7 @@ char	*get_next_line(int fd)
 	{
 		// malloc error handling
 		free_list(&head);
+		clear_static(&head);
 		return (NULL);
 	}
 	// copy from linked list into result
@@ -113,14 +115,17 @@ char	*get_next_line(int fd)
 	}
 	else
 	{
-		head.bytes_unsaved -= result_size;
-		if (!head.bytes_unsaved)
+		if ((ssize_t) result_size == head.bytes_unsaved)
+			clear_static(&head);
+		else
 		{
-			head.line_end = -1;
-			head.buf[0] = '\0';
+			i = 0;
+			while (i < result_size)
+				head.buf[i++] = '\0';
+			head.bytes_unsaved -= (ssize_t) result_size;
+			head.endoffile = 0;
 		}
 	}
-	head.endoffile = 0;
 	return (result);
 }
 
@@ -191,10 +196,11 @@ void	save_leftover(t_list *head, t_list *cur)
 	j = cur->line_end + 1;
 	while (j < cur->bytes_unsaved)
 		head->buf[i++] = cur->buf[j++];
-	head->buf[i] = '\0';
-	head->bytes_unsaved = i;
-	head->line_end = -1;	// 0 or -1?
-	head->endoffile = cur->endoffile;	// redundant atm bc I set it to 0 afterwards
+	j = i;
+	while (i < head->bytes_unsaved)
+		head->buf[i++] = '\0';
+	head->bytes_unsaved = j;
+	head->line_end = -1;
 	return ;
 }
 
