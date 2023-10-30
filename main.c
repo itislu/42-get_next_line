@@ -5,7 +5,7 @@
 #ifndef FD
 # define FD 0
 #endif
-#define BUFFER_SIZE 1
+#define BUFFER_SIZE 10
 
 #include "get_next_line.h"
 
