@@ -24,7 +24,7 @@ int	main(void)
 	// fd = open("/nfs/homes/ldulling/francinette/tests/get_next_line/fsoares/empty.txt", O_RDONLY);
 
 	// close(fd);
-	// fd = open("/nfs/homes/ldulling/francinette/tests/get_next_line/fsoares/empty.txt", O_RDONLY);
+	//fd = open("/nfs/homes/ldulling/francinette/tests/get_next_line/gnlTester/files/42_with_nl", O_RDONLY);
 
 	fd = open("test_short.txt", O_RDONLY);
 

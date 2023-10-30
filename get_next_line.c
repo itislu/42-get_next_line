@@ -62,8 +62,8 @@ char	*get_next_line(int fd)
 			cur->endoffile = 1;
 		}
 		cur->buf[cur->bytes_unsaved] = '\0';
-		cur->newline_pos = find_endofline(cur);
-		if (cur->newline_pos == -1 && !cur->endoffile)
+		cur->line_end = find_endofline(cur);
+		if (cur->line_end == -1 && !cur->endoffile)
 		{
 			if (!add_new_node(cur))
 			{
@@ -74,7 +74,7 @@ char	*get_next_line(int fd)
 		}
 		cur = cur->next;
 	}
-	// start at head and copy while cur->next && cur->newline_pos == -1
+	// start at head and copy while cur->next && cur->line_end == -1
 	cur = &head;
 	result_size = 0;
 	// count result_size for malloc
@@ -83,7 +83,7 @@ char	*get_next_line(int fd)
 		result_size += cur->bytes_unsaved;
 		cur = cur->next;
 	}
-	result_size += cur->newline_pos + 1;
+	result_size += cur->line_end + 1;
 	result = (char *) malloc(result_size + 1);
 	if (!result)
 	{
@@ -96,13 +96,13 @@ char	*get_next_line(int fd)
 	i = 0;
 	while (cur->next)
 	{
-		j = 0;
-		while (j < cur->bytes_unsaved)	//would be while (cur->buf[j]) with BUFFER_SIZE + 1 in struct
-			result[i++] = cur->buf[cur->newline_pos + ++j];
+		j = 1;
+		while (j <= cur->bytes_unsaved)
+			result[i++] = cur->buf[cur->line_end + j++];
 		cur = cur->next;
 	}
 	j = 0;
-	while (j <= cur->newline_pos)
+	while (j <= cur->line_end)
 		result[i++] = cur->buf[j++];
 	result[i] = '\0';
 	// copy any leftover into the static head
@@ -115,7 +115,10 @@ char	*get_next_line(int fd)
 	{
 		head.bytes_unsaved -= result_size;
 		if (!head.bytes_unsaved)
-			head.newline_pos = -1;
+		{
+			head.line_end = -1;
+			head.buf[0] = '\0';
+		}
 	}
 	head.endoffile = 0;
 	return (result);
@@ -123,27 +126,27 @@ char	*get_next_line(int fd)
 
 int	check_for_full_leftover_line(t_list *head, char **result)
 {
-	size_t	i;
+	ssize_t	i;
 	ssize_t	new_newline_pos;
-	size_t	result_size;
+	ssize_t	result_size;
 
 	new_newline_pos = find_endofline(head);
 	if (new_newline_pos != -1)
 	{
-		result_size = new_newline_pos - head->newline_pos;
+		result_size = new_newline_pos - head->line_end;
 		*result = (char *) malloc(result_size + 1);
 		if (!*result)
 			return (0);
 		i = 0;
-		head->newline_pos++;
+		head->line_end++;
 		while (i < result_size)
 		{
-			(*result)[i] = head->buf[head->newline_pos + i];
+			(*result)[i] = head->buf[head->line_end + i];
 			i++;
 		}
 		(*result)[i] = '\0';
 		head->bytes_unsaved -= result_size;
-		head->newline_pos = new_newline_pos;
+		head->line_end = new_newline_pos;
 	}
 	else
 		*result = NULL;
@@ -154,19 +157,15 @@ ssize_t	find_endofline(t_list *cur)
 {
 	ssize_t	i;
 
-	/* Possibly fit somewhere here */
-	// if (cur->bytes_unsaved != BUFFER_SIZE)
-	// 	cur->newline_pos = cur->bytes_unsaved - 1;
-
-	i = cur->newline_pos + 1;
-	while (cur->buf[i])	// or i < cur->bytes_unsaved	//! need a better way
+	i = cur->line_end + 1;
+	while (cur->buf[i])
 	{
 		if (cur->buf[i] == '\n')
 			return (i);
 		i++;
 	}
 	if (cur->endoffile)
-		return (i - 1);	// or cur->bytes_unsaved - 1
+		return (i - 1);
 	else
 	 	return (-1);
 }
@@ -177,7 +176,7 @@ int	add_new_node(t_list *cur)
 	if (!cur->next)
 		return (0);
 	cur->next->bytes_unsaved = 0;
-	cur->next->newline_pos = -1;
+	cur->next->line_end = -1;
 	cur->next->endoffile = 0;
 	cur->next->next = NULL;
 	return (1);
@@ -185,17 +184,17 @@ int	add_new_node(t_list *cur)
 
 void	save_leftover(t_list *head, t_list *cur)
 {
-	size_t	i;
+	ssize_t	i;
 	ssize_t	j;
 
 	i = 0;
-	j = cur->newline_pos + 1;
+	j = cur->line_end + 1;
 	while (j < cur->bytes_unsaved)
 		head->buf[i++] = cur->buf[j++];
 	head->buf[i] = '\0';
 	head->bytes_unsaved = i;
-	head->newline_pos = -1;	// 0 or -1?
-	head->endoffile = cur->endoffile;
+	head->line_end = -1;	// 0 or -1?
+	head->endoffile = cur->endoffile;	// redundant atm bc I set it to 0 afterwards
 	return ;
 }
 
@@ -214,13 +213,13 @@ void	free_list(t_list *head)
 
 void	clear_static(t_list *head)
 {
-	size_t	i;
+	ssize_t	i;
 
 	i = 0;
 	while (head->buf[i])
 	  	head->buf[i++] = '\0';
 	head->bytes_unsaved = 0;
-	head->newline_pos = -1;
+	head->line_end = -1;
 	head->endoffile = 0;
 	head->next = NULL;
 }

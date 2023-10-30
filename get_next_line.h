@@ -12,9 +12,9 @@
 
 typedef struct	s_list
 {
-	char			buf[BUFFER_SIZE + 1];	// for some reason + 1 isn't even necessary
+	char			buf[BUFFER_SIZE + 1];
 	ssize_t			bytes_unsaved;
-	ssize_t			newline_pos;	// might actually better be called endofline_pos
+	ssize_t			line_end;
 	char			endoffile;
 	struct s_list	*next;
 }	t_list;
