@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:28:58 by ldulling          #+#    #+#             */
-/*   Updated: 2023/10/31 12:52:04 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/10/31 16:50:20 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int		check_for_full_leftover_line(t_list *head, char **result);
 int		read_until_endofline(t_list *head, int fd);
 char	*copy_into_result(t_list *head, t_list **cur, size_t *result_size);
 void	save_leftover(t_list *head, t_list *cur, ssize_t result_size);
+
 /* get_next_line_utils.c */
 int		add_new_node(t_list *cur);
 void	clear_static(t_list *head);

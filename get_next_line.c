@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/10/31 12:36:07 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/10/31 16:46:18 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,35 @@ char	*get_next_line(int fd)
 		return (NULL);
 	save_leftover(&head, cur, (ssize_t) result_size);
 	return (result);
+}
+
+int	check_for_full_leftover_line(t_list *head, char **result)
+{
+	ssize_t	i;
+	ssize_t	new_newline_pos;
+	ssize_t	result_size;
+
+	new_newline_pos = find_endofline(head);
+	if (new_newline_pos != -1)
+	{
+		result_size = new_newline_pos - head->line_end;
+		*result = (char *) malloc(result_size + 1);
+		if (!*result)
+			return (0);
+		i = 0;
+		head->line_end++;
+		while (i < result_size)
+		{
+			(*result)[i++] = head->buf[head->line_end];
+			head->buf[head->line_end++] = '\0';
+		}
+		(*result)[i] = '\0';
+		head->bytes_unsaved -= result_size;
+		head->line_end = new_newline_pos;
+	}
+	else
+		*result = NULL;
+	return (1);
 }
 
 int	read_until_endofline(t_list *head, int fd)
@@ -84,9 +113,9 @@ char	*copy_into_result(t_list *head, t_list **cur, size_t *result_size)
 	i = 0;
 	while ((*cur)->next)
 	{
-		j = 1;
-		while (j <= (*cur)->bytes_unsaved)
-			result[i++] = (*cur)->buf[(*cur)->line_end + j++];
+		j = (*cur)->line_end + 1;
+		while ((*cur)->buf[j])
+			result[i++] = (*cur)->buf[j++];
 		(*cur) = (*cur)->next;
 	}
 	j = 0;
@@ -96,60 +125,31 @@ char	*copy_into_result(t_list *head, t_list **cur, size_t *result_size)
 	return (result);
 }
 
-int	check_for_full_leftover_line(t_list *head, char **result)
-{
-	ssize_t	i;
-	ssize_t	new_newline_pos;
-	ssize_t	result_size;
-
-	new_newline_pos = find_endofline(head);
-	if (new_newline_pos != -1)
-	{
-		result_size = new_newline_pos - head->line_end;
-		*result = (char *) malloc(result_size + 1);
-		if (!*result)
-			return (0);
-		i = 0;
-		head->line_end++;
-		while (i < result_size)
-		{
-			(*result)[i] = head->buf[head->line_end + i];
-			i++;
-		}
-		(*result)[i] = '\0';
-		head->bytes_unsaved -= result_size;
-		head->line_end = new_newline_pos;
-	}
-	else
-		*result = NULL;
-	return (1);
-}
-
 void	save_leftover(t_list *head, t_list *cur, ssize_t result_size)
 {
 	ssize_t	i;
 	ssize_t	j;
 
 	i = 0;
-	j = cur->line_end + 1;
 	if (cur != head)
 	{
+		j = cur->line_end + 1;
 		while (j < cur->bytes_unsaved)
 			head->buf[i++] = cur->buf[j++];
 		j = i;
-		while (i < head->bytes_unsaved)
+		if (i <= head->line_end)
+			i = head->line_end + 1;
+		while (head->buf[i])
 			head->buf[i++] = '\0';
 		head->bytes_unsaved = j;
 		head->line_end = -1;
 		free_list(head);
+		return ;
 	}
-	else
-	{
-		if (result_size == head->bytes_unsaved)
-			return (clear_static(head));
-		while (i < result_size)
-			head->buf[i++] = '\0';
-		head->bytes_unsaved -= result_size;
-		head->endoffile = 0;
-	}
+	if (result_size == head->bytes_unsaved)
+		return (clear_static(head));
+	while (i < result_size)
+		head->buf[i++] = '\0';
+	head->bytes_unsaved -= result_size;
+	head->endoffile = 0;
 }
