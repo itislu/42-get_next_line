@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:28:58 by ldulling          #+#    #+#             */
-/*   Updated: 2023/10/31 18:26:04 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/10/31 18:32:33 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 128
 # endif
+# define FD_AMOUNT 1024
 
 typedef struct s_list
 {

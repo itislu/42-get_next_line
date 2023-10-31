@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/10/31 18:25:55 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/10/31 19:01:09 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,30 @@
 
 char	*get_next_line(int fd)
 {
-	static t_list	head = {{'\0'}, 0, -1, 0, NULL};
+	static t_list	head[FD_AMOUNT];
 	t_list			*cur;
 	char			*result;
 	size_t			result_size;
 
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
-	if (head.bytes_unsaved)
+	if (head[fd].bytes_unsaved)
 	{
-		if (!check_for_full_leftover_line(&head, &result))
+		if (!check_for_full_leftover_line(&head[fd], &result))
 			return (NULL);
 		if (result)
 			return (result);
-		if (!add_new_node(&head))
+		if (!add_new_node(&head[fd]))
 			return (NULL);
 	}
-	if (!read_until_endofline(&head, fd))
+	if (!read_until_endofline(&head[fd], fd))
 		return (NULL);
-	cur = &head;
+	cur = &head[fd];
 	result_size = 0;
-	result = copy_into_result(&head, &cur, &result_size);
+	result = copy_into_result(&head[fd], &cur, &result_size);
 	if (!result)
 		return (NULL);
-	save_leftover(&head, cur, (ssize_t) result_size);
+	save_leftover(&head[fd], cur, (ssize_t) result_size);
 	return (result);
 }
 
@@ -77,7 +77,10 @@ int	read_until_endofline(t_list *head, int fd)
 	if (head->bytes_unsaved)
 		cur = head->next;
 	else
+	{
 		cur = head;
+		cur->line_end = -1;
+	}
 	while (cur)
 	{
 		cur->bytes_unsaved = read(fd, cur->buf, BUFFER_SIZE);
