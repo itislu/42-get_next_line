@@ -4,7 +4,8 @@ D			=	build/dep/
 O			=	build/obj/
 
 SRC			=	main.c \
-				get_next_line.c
+				get_next_line.c \
+				get_next_line_utils.c
 
 CC			=	cc
 CFLAGS		=	-g -Wall -Wextra -Werror $(foreach X,$I,-I$X)

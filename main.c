@@ -1,20 +1,14 @@
 #include <fcntl.h>
+#include <stddef.h>
 #include <stdio.h>
-#include <unistd.h>
 
 #ifndef FD
 # define FD 0
 #endif
-#define BUFFER_SIZE 10
+
+//#define BUFFER_SIZE 10
 
 #include "get_next_line.h"
-
-/*
-LIMITS TESTS FAIL WITH:
-"10\n", "11", "11\n", "19", "19\n", "20", "20\n", "21", "21\n",
-		"9\n9\n", "9\n10", "9\n10\n",
-		"10\n8\n", "10\n9", "10\n9\n"
-*/
 
 int	main(void)
 {
