@@ -14,7 +14,6 @@ int	main(void)
 {
 	char	*result;
 	int		fd;
-	int		iterations;
 
 	// fd = open("/nfs/homes/ldulling/francinette/tests/get_next_line/fsoares/empty.txt", O_RDONLY);
 
@@ -34,7 +33,7 @@ int	main(void)
 	// }
 
 	/* LINE BY LINE */
-	iterations = 2;
+	int	iterations = 2;
 	for (int i = 0; i < iterations; i++)
 	{
 		result = get_next_line(fd);
