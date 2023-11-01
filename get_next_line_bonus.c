@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/01 19:57:31 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/01 21:53:11 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	check_for_full_leftover_line(t_list *head, char **result)
 	ssize_t	result_size;
 
 	new_newline_pos = find_endofline(head);
-	if (new_newline_pos != -1)
+	if (new_newline_pos != NO_NL)
 	{
 		result_size = new_newline_pos - head->line_end;
 		*result = (char *) malloc(result_size + 1);
@@ -76,7 +76,7 @@ int	read_until_endofline(t_list *head, int fd, t_list *cur)
 	while (cur)
 	{
 		cur->bytes_unsaved = read(fd, cur->buf, BUFFER_SIZE);
-		if (head->bytes_unsaved == 0 || cur->bytes_unsaved == -1)
+		if (cur->bytes_unsaved == -1 || head->bytes_unsaved == 0)
 		{
 			head->bytes_unsaved = 0;
 			return (0);
@@ -85,7 +85,7 @@ int	read_until_endofline(t_list *head, int fd, t_list *cur)
 			cur->endoffile = 1;
 		cur->buf[cur->bytes_unsaved] = '\0';
 		cur->line_end = find_endofline(cur);
-		if (cur->line_end == -1 && !cur->endoffile)
+		if (cur->line_end == NO_NL && !cur->endoffile)
 		{
 			if (!add_new_node(cur))
 			{
@@ -139,7 +139,7 @@ int	save_leftover(t_list *head, t_list *cur)
 			head->buf[i++] = cur->buf[j++];
 		head->bytes_unsaved = i;
 		head->buf[i] = '\0';
-		head->line_end = -1;
+		head->line_end = NO_NL;
 		return (1);
 	}
 	head->bytes_unsaved -= head->line_end + 1;

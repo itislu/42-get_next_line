@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/01 20:44:02 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/01 21:52:31 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char	*get_next_line(int fd)
 {
-	static t_list	head = {{'\0'}, 0, -1, 0, NULL};
+	static t_list	head = {{'\0'}, 0, NO_NL, 0, NULL};
 	t_list			*cur;
 	char			*result;
 	size_t			result_size;
@@ -48,7 +48,7 @@ int	check_for_full_leftover_line(t_list *head, char **result)
 	ssize_t	result_size;
 
 	new_newline_pos = find_endofline(head);
-	if (new_newline_pos != -1)
+	if (new_newline_pos != NO_NL)
 	{
 		result_size = new_newline_pos - head->line_end;
 		*result = (char *) malloc(result_size + 1);
@@ -91,7 +91,7 @@ int	read_until_endofline(t_list *head, int fd)
 		}
 		cur->buf[cur->bytes_unsaved] = '\0';
 		cur->line_end = find_endofline(cur);
-		if (cur->line_end == -1 && !cur->endoffile)
+		if (cur->line_end == NO_NL && !cur->endoffile)
 			if (!add_new_node(cur))
 				return (free_list(head), clear_static(head), 0);
 		cur = cur->next;
@@ -142,7 +142,7 @@ void	save_leftover(t_list *head, t_list *cur, ssize_t result_size)
 		while (head->buf[i])
 			head->buf[i++] = '\0';
 		head->bytes_unsaved = j;
-		head->line_end = -1;
+		head->line_end = NO_NL;
 		free_list(head);
 		return ;
 	}

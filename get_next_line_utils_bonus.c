@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:27:22 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/01 19:57:36 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/01 21:53:30 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	add_new_node(t_list *cur)
 	if (!cur->next)
 		return (0);
 	cur->next->bytes_unsaved = 0;
-	cur->next->line_end = -1;
+	cur->next->line_end = NO_NL;
 	cur->next->endoffile = 0;
 	cur->next->next = NULL;
 	return (1);
@@ -52,7 +52,7 @@ ssize_t	find_endofline(t_list *cur)
 	if (cur->endoffile)
 		return (i - 1);
 	else
-		return (-1);
+		return (NO_NL);
 }
 
 void	free_list(t_list **head)
@@ -84,7 +84,7 @@ int	initial_check(int fd, t_list **head)
 			return (0);
 		(*head)->buf[0] = '\0';
 		(*head)->bytes_unsaved = 0;
-		(*head)->line_end = -1;
+		(*head)->line_end = NO_NL;
 		(*head)->endoffile = 0;
 		(*head)->next = NULL;
 	}
