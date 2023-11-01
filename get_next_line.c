@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/10/31 16:46:18 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/01 20:44:02 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,5 +151,4 @@ void	save_leftover(t_list *head, t_list *cur, ssize_t result_size)
 	while (i < result_size)
 		head->buf[i++] = '\0';
 	head->bytes_unsaved -= result_size;
-	head->endoffile = 0;
 }

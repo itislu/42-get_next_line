@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:27:22 by ldulling          #+#    #+#             */
-/*   Updated: 2023/10/31 12:33:55 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/01 21:02:17 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	clear_static(t_list *head)
 	ssize_t	i;
 
 	i = 0;
-	while (head->buf[i])
+	while (i < BUFFER_SIZE)
 		head->buf[i++] = '\0';
 	head->bytes_unsaved = 0;
 	head->line_end = -1;
