@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/02 12:09:13 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/02 12:10:58 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,30 @@
 
 char	*get_next_line(int fd)
 {
-	static t_list	*head[FD_AMOUNT];
+	static t_list	*head;
 	t_list			*cur;
 	char			*result;
 
-	if (!initial_check(fd, &head[fd]))
+	if (!initial_check(fd, &head))
 		return (NULL);
-	if (head[fd]->bytes_unsaved)
+	if (head->bytes_unsaved)
 	{
-		if (check_for_full_leftover_line(head[fd], &result))
-			return (free_list(&head[fd]), result);
-		if (!add_new_node(head[fd]))
+		if (check_for_full_leftover_line(head, &result))
+			return (free_list(&head), result);
+		if (!add_new_node(head))
 		{
-			head[fd]->bytes_unsaved = 0;
-			return (free_list(&head[fd]), NULL);
+			head->bytes_unsaved = 0;
+			return (free_list(&head), NULL);
 		}
 	}
-	cur = head[fd];
-	if (!read_until_endofline(head[fd], fd, cur))
-		return (free_list(&head[fd]), NULL);
-	result = copy_into_result(head[fd], &cur);
+	cur = head;
+	if (!read_until_endofline(head, fd, cur))
+		return (free_list(&head), NULL);
+	result = copy_into_result(head, &cur);
 	if (!result)
-		return (free_list(&head[fd]), NULL);
-	if (save_leftover(head[fd], cur))
-		free_list(&head[fd]);
+		return (free_list(&head), NULL);
+	if (save_leftover(head, cur))
+		free_list(&head);
 	return (result);
 }
 
