@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:27:22 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/02 12:06:14 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/02 15:18:50 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,8 @@ void	free_list(t_list **head)
 		(*head)->next = cur->next;
 		free(cur);
 	}
-	if ((*head)->bytes_unsaved <= 0)
-	{
-		free(*head);
-		*head = NULL;
-	}
+	free(*head);
+	*head = NULL;
 	return ;
 }
 
