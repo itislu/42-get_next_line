@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/02 12:10:58 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/02 13:36:34 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 char	*get_next_line(int fd)
 {
 	static t_list	*head;
-	t_list			*cur;
 	char			*result;
 
 	if (!initial_check(fd, &head))
@@ -30,13 +29,13 @@ char	*get_next_line(int fd)
 			return (free_list(&head), NULL);
 		}
 	}
-	cur = head;
-	if (!read_until_endofline(head, fd, cur))
+	if (!read_until_endofline(head, fd, head))
 		return (free_list(&head), NULL);
-	result = copy_into_result(head, &cur);
+	result = copy_into_result(head);
 	if (!result)
 		return (free_list(&head), NULL);
-	if (save_leftover(head, cur))
+	point_head_to_tail(&head);
+	if (!head->bytes_unsaved)
 		free_list(&head);
 	return (result);
 }
@@ -71,7 +70,7 @@ int	check_for_full_leftover_line(t_list *head, char **result)
 
 int	read_until_endofline(t_list *head, int fd, t_list *cur)
 {
-	if (head->bytes_unsaved)
+	if (head->next)
 		cur = head->next;
 	while (cur)
 	{
@@ -98,52 +97,45 @@ int	read_until_endofline(t_list *head, int fd, t_list *cur)
 	return (1);
 }
 
-char	*copy_into_result(t_list *head, t_list **cur)
+char	*copy_into_result(t_list *head)
 {
+	t_list	*cur;
 	char	*result;
 	size_t	i;
 	ssize_t	j;
 
-	result = (char *) malloc(count_result_size(*cur) + 1);
+	result = (char *) malloc(count_result_size(head) + 1);
 	if (!result)
 	{
 		head->bytes_unsaved = 0;
 		return (NULL);
 	}
-	(*cur) = head;
+	cur = head;
 	i = 0;
-	while ((*cur)->next)
+	while (cur->next)
 	{
-		j = (*cur)->line_end + 1;
-		while ((*cur)->buf[j])
-			result[i++] = (*cur)->buf[j++];
-		(*cur) = (*cur)->next;
+		j = cur->line_end + 1;
+		while (cur->buf[j])
+			result[i++] = cur->buf[j++];
+		cur = cur->next;
 	}
 	j = 0;
-	while (j <= (*cur)->line_end)
-		result[i++] = (*cur)->buf[j++];
+	while (j <= cur->line_end)
+		result[i++] = cur->buf[j++];
 	result[i] = '\0';
 	return (result);
 }
 
-int	save_leftover(t_list *head, t_list *cur)
+void	point_head_to_tail(t_list **head)
 {
-	ssize_t	i;
-	ssize_t	j;
+	t_list	*cur;
 
-	if (cur != head)
+	while ((*head)->next)
 	{
-		i = 0;
-		j = cur->line_end + 1;
-		while (j < cur->bytes_unsaved)
-			head->buf[i++] = cur->buf[j++];
-		head->bytes_unsaved = i;
-		head->buf[i] = '\0';
-		head->line_end = NO_NL;
-		return (1);
+		cur = (*head);
+		(*head) = (*head)->next;
+		free(cur);
 	}
-	head->bytes_unsaved -= head->line_end + 1;
-	if (!head->bytes_unsaved)
-		return (1);
-	return (0);
+	(*head)->bytes_unsaved -= (*head)->line_end + 1;
+	return ;
 }

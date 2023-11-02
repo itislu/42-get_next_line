@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:28:58 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/02 12:10:41 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/02 13:36:36 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ typedef struct s_list
 char	*get_next_line(int fd);
 int		check_for_full_leftover_line(t_list *head, char **result);
 int		read_until_endofline(t_list *head, int fd, t_list *cur);
-char	*copy_into_result(t_list *head, t_list **cur);
-int		save_leftover(t_list *head, t_list *cur);
+char	*copy_into_result(t_list *head);
+void	point_head_to_tail(t_list **head);
 
 /* get_next_line_utils.c */
 int		add_new_node(t_list *cur);
