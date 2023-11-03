@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:27:22 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/02 15:18:50 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/03 22:42:31 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,12 @@ void	free_list(t_list **head)
 {
 	t_list	*cur;
 
-	while ((*head)->next)
+	while (*head)
 	{
-		cur = (*head)->next;
-		(*head)->next = cur->next;
+		cur = *head;
+		*head = (*head)->next;
 		free(cur);
 	}
-	free(*head);
-	*head = NULL;
 	return ;
 }
 
