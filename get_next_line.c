@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/03 22:29:23 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/03 22:37:22 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int	read_until_endofline(t_list **head, int fd)
 	return (1);
 }
 
-char	*copy_into_result(t_list **head)
+char	*copy_into_result_and_move_head_to_tail(t_list **head)
 {
 	t_list	*cur;
 	char	*result;
