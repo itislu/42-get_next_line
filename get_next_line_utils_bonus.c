@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 12:27:22 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/03 22:42:20 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/04 14:40:33 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	free_list(t_list **head)
 
 int	initial_check(int fd, t_list **head)
 {
-	if (fd < 0 || BUFFER_SIZE < 1)
+	if (fd < 0 || fd >= FD_MAX || BUFFER_SIZE < 1)
 		return (0);
 	if (!*head)
 	{
