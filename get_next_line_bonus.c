@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/04 18:39:27 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/04 18:55:39 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,10 @@ int	check_for_full_leftover_line(t_list **head, char **result)
 			(*result)[i++] = (*head)->buf[(*head)->line_end++];
 		(*result)[i] = '\0';
 		(*head)->bytes_unsaved -= result_size;
-		(*head)->line_end = new_line_end;
+		if ((*head)->bytes_unsaved)
+			(*head)->line_end = new_line_end;
+		else
+			free_list(head);
 		return (1);
 	}
 	return (0);
