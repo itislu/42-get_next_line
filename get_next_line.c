@@ -6,7 +6,7 @@
 /*   By: ldulling <ldulling@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 15:06:25 by ldulling          #+#    #+#             */
-/*   Updated: 2023/11/03 22:37:22 by ldulling         ###   ########.fr       */
+/*   Updated: 2023/11/04 18:38:43 by ldulling         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ char	*get_next_line(int fd)
 int	check_for_full_leftover_line(t_list **head, char **result)
 {
 	ssize_t	i;
-	ssize_t	new_newline_pos;
+	ssize_t	new_line_end;
 	ssize_t	result_size;
 
-	new_newline_pos = find_endofline(*head);
-	if (new_newline_pos != NO_NL)
+	new_line_end = find_endofline(*head);
+	if (new_line_end != NO_NL)
 	{
-		result_size = new_newline_pos - (*head)->line_end;
+		result_size = new_line_end - (*head)->line_end;
 		*result = (char *) malloc(result_size + 1);
 		if (!*result)
 			return (free_list(head), 1);
@@ -56,7 +56,7 @@ int	check_for_full_leftover_line(t_list **head, char **result)
 			(*result)[i++] = (*head)->buf[(*head)->line_end++];
 		(*result)[i] = '\0';
 		(*head)->bytes_unsaved -= result_size;
-		(*head)->line_end = new_newline_pos;
+		(*head)->line_end = new_line_end;
 		return (1);
 	}
 	return (0);
